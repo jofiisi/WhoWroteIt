@@ -4,7 +4,6 @@ import HomeScreen from './src/Home';
 import Search from './src/Search';
 import Host from './src/Host';
 
-
 const Stack = createStackNavigator();
 
 export default function App() {

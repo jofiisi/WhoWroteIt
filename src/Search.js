@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { View, Text } from "react-native";
-import { FlatList } from "react-native-gesture-handler";
 import udpSocket from "react-native-udp";
 
 const Search = ({ navigation }) => {
@@ -17,7 +16,7 @@ const Search = ({ navigation }) => {
             console.log(`Received message: ${msg} from ${rinfo.address}:${rinfo.port}`);
             if (msg.slice(0, 2) == 'lb') {
                 console.log("found lobby");
-                setLobbys(prevLobbys => [...prevLobbys, msg.slice(2)]);
+                setLobbys(prevLobbys => [...prevLobbys, {message: msg.slice(2), address: rinfo.address}]);
             }
         });
 
@@ -42,7 +41,7 @@ const Search = ({ navigation }) => {
                 (
                     lobbys.map((lobby, index) => (
                         <View key={index}>
-                            <Text>{lobby}</Text>
+                            <Text>{lobby.message}</Text>
                         </View>
                     ))
                 ) : (<Text>No Lobbys found yet</Text>)

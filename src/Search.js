@@ -14,9 +14,17 @@ const Search = ({ navigation }) => {
 
         client.on('message', (msg, rinfo) => {
             console.log(`Received message: ${msg} from ${rinfo.address}:${rinfo.port}`);
+            let msgLobby = String(msg.slice(2));
             if (msg.slice(0, 2) == 'lb') {
                 console.log("found lobby");
-                setLobbys(prevLobbys => [...prevLobbys, {message: msg.slice(2), address: rinfo.address}]);
+                if (lobbys.every(element => element.message != msgLobby))
+                {
+                    console.log('Checking message:', msgLobby);
+                    
+                    setLobbys(prevLobbys => [...prevLobbys, { message: msgLobby, address: rinfo.address }]);
+                }else {
+                    console.log('Lobby already listed');
+                }
             }
         });
 
@@ -28,24 +36,25 @@ const Search = ({ navigation }) => {
             client.close();
         };
     }, []);
-
+    
 
     return (
         <View>
             <Text>
                 Search
             </Text>
-
+            {console.log(lobbys)}
             {
-                lobbys.length > 0 ? 
-                (
-                    lobbys.map((lobby, index) => (
-                        <View key={index}>
-                            <Text>{lobby.message}</Text>
-                        </View>
-                    ))
-                ) : (<Text>No Lobbys found yet</Text>)
-            
+                lobbys.length > 0 ?
+                    (
+                        lobbys.map((lobby, index) => (
+                            
+                            <View key={index}>
+                                <Text>{String(lobby.message)}</Text>
+                            </View>
+                        ))
+                    ) : (<Text>No Lobbys found yet</Text>)
+
             }
         </View>
     );

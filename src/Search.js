@@ -14,12 +14,12 @@ const Search = ({ navigation }) => {
 
         client.on('message', (msg, rinfo) => {
             console.log(`Received message: ${msg} from ${rinfo.address}:${rinfo.port}`);
-            let msgLobby = String(msg.slice(2));
+            let msgLobby = msg.slice(2);
             if (msg.slice(0, 2) == 'lb') {
                 console.log("found lobby");
                 if (lobbys.every(element => element.message != msgLobby))
                 {
-                    console.log('Checking message:', msgLobby);
+                    console.log('Checked message:', msgLobby);
                     
                     setLobbys(prevLobbys => [...prevLobbys, { message: msgLobby, address: rinfo.address }]);
                 }else {
@@ -49,7 +49,7 @@ const Search = ({ navigation }) => {
                     (
                         lobbys.map((lobby, index) => (
                             
-                            <View key={index}>
+                            <View key={index}>  //every element gets a unique key so its easier to render
                                 <Text>{String(lobby.message)}</Text>
                             </View>
                         ))

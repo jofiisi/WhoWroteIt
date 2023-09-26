@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
-import { View, Text } from "react-native";
+import { View, Text, Button } from "react-native";
 import udpSocket from "react-native-udp";
 
 const Search = ({ navigation }) => {
     let PORT = 6024;
 
     const [lobbys, setLobbys] = useState([]);
+    const [Name, setName] = useState('');
+    const [client, setClient] = useState(null);
 
     useEffect(() => {
         const client = udpSocket.createSocket('udp4');
 
         client.bind(6024);
-
+        setClient(client);
         client.on('message', (msg, rinfo) => {
             console.log(`Received message: ${msg} from ${rinfo.address}:${rinfo.port}`);
             let msgLobby = msg.slice(2).toString();
@@ -30,8 +32,16 @@ const Search = ({ navigation }) => {
                 });
             }
         });
+        return () => {
+            client.close();
+        }
     }, []); // Empty dependency array, so this effect only runs once
-//comments by chatgpt, asychronus state cause a headache
+    //comments by chatgpt, asychronus state cause a headache
+
+    const connect2Lobby = (index) => {
+        client.send('UN' + Name, 0, Name.length + 2, PORT, lobbys[index].address);
+    }
+
     return (
         <View>
             <Text>
@@ -42,7 +52,10 @@ const Search = ({ navigation }) => {
                     (
                         lobbys.map((lobby, index) => (
                             <View key={index}>
-                                <Text>{String(lobby.message)}</Text>
+                                <Button 
+                                    title={String(lobby.message)}
+                                    onPress={fct => connect2Lobby(index)}
+                                />
                             </View>
                         ))
                     ) : (<Text>No Lobbys found yet</Text>)

@@ -6,6 +6,8 @@ const Host = ({ navigation }) => {
     let PORT = 6024;
     const [lobbyName, setLobbyname] = useState('');
     const [server, setServer] = useState(null);
+    const [repeat, setRepeat] = useState(null);
+    
 
     useEffect(() => {
         const server = udpSocket.createSocket('udp4');
@@ -25,6 +27,7 @@ const Host = ({ navigation }) => {
 
         return () => {
             server.close();
+            clearInterval(repeat);
         }
     }, []);
 
@@ -33,7 +36,14 @@ const Host = ({ navigation }) => {
             if (err) {
                 console.error("Error sending message:", err);
             } else {
-                console.log('Message sent!')
+                console.log('Message sent!');
+                if(repeat == null)
+                {
+                    const interval = setInterval(() => {
+                        startLobby();
+                    }, 2000);
+                    setRepeat(interval);
+                }
             }
         });
     };

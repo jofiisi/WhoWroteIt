@@ -23,6 +23,11 @@ const Host = ({ navigation }) => {
             })
         })
 
+        server.on('message', (msg, rinfo) => {
+            console.log(`Received message: ${msg} from ${rinfo.address}:${rinfo.port}`);
+            
+        });
+
         setServer(server);
 
         return () => {

@@ -11,6 +11,8 @@ const Host = ({ navigation }) => {
     const [server, setServer] = useState(null);
     const repeatRef = useRef(null);
     const lobbyNameRef = useRef('');
+    const [startedLobby, setStartedLobby] = useState(false);
+    const [users, setUsers] = useState([]);
 
     useEffect(() => {
         const server = udpSocket.createSocket('udp4');
@@ -34,6 +36,7 @@ const Host = ({ navigation }) => {
     }, []);
 
     const startLobby = () => {
+        setStartedLobby(true);
         const currentLobbyName = lobbyNameRef.current;
         server.send('lb' + currentLobbyName, 0, currentLobbyName.length + 2, PORT, bcIP, function (err) {
             if (err) {
@@ -52,6 +55,24 @@ const Host = ({ navigation }) => {
     useEffect(() => {
         lobbyNameRef.current = lobbyName;
     }, [lobbyName]);
+
+    if(startedLobby)
+    {
+        return(
+            <View>
+                {
+                    users.length > 0 ?
+                        (
+                            users.map((users, index) => (
+                                <View key={index}>
+                                    {users}
+                                </View>
+                            ))
+                        ) : (<Text>No Users yet</Text>)
+                    }
+            </View>
+        );
+    }
 
     return (
         <View>

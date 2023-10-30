@@ -47,6 +47,10 @@ const Search = ({ navigation }) => {
             <Text>
                 Search
             </Text>
+            <TextInput
+                placeholder="User Name"
+                onChangeText={text => { setName(text) }}
+            />
             {
                 lobbys.length > 0 ?
                     (

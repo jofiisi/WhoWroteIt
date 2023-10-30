@@ -27,6 +27,25 @@ const Host = ({ navigation }) => {
             });
         });
 
+        server.on('message', (msg, rinfo) => {
+            console.log(`Received message: ${msg} from ${rinfo.address}:${rinfo.port}`);
+            let msgLobby = msg.slice(2).toString();
+            if (msg.slice(0, 2) == 'UN') {
+                console.log("found Users");
+                setUsers
+                // Use a callback function to ensure the correct value is used
+                setUsers(prevUsers => {
+                    if (!prevUsers.some(element => element.message === msgLobby)) {
+                        console.log('Checked message:', msgLobby);
+                        return [...prevUsers, { message: msgLobby, address: rinfo.address }];
+                    } else {
+                        console.log('User already listed');
+                        return prevUsers;
+                    }
+                });
+            }
+        });
+
         setServer(server);
 
         return () => {
@@ -65,11 +84,11 @@ const Host = ({ navigation }) => {
                         (
                             users.map((users, index) => (
                                 <View key={index}>
-                                    {users}
+                                    <Text>{users.message}</Text>
                                 </View>
                             ))
                         ) : (<Text>No Users yet</Text>)
-                    }
+                }
             </View>
         );
     }

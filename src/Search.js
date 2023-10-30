@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { View, Text, Button } from "react-native";
+import { View, Text, Button, TextInput } from "react-native";
 import udpSocket from "react-native-udp";
 
 const Search = ({ navigation }) => {

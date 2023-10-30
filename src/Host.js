@@ -2,6 +2,9 @@ import { useEffect, useState, useRef } from "react";
 import { View, Text, TextInput, Button } from "react-native";
 import udpSocket from "react-native-udp";
 
+//remove when not using an Androidstudioemulator
+const bcIP = '10.0.2.2'
+
 const Host = ({ navigation }) => {
     let PORT = 6024;
     const [lobbyName, setLobbyname] = useState('');
@@ -16,7 +19,7 @@ const Host = ({ navigation }) => {
 
         server.once('listening', function () {
             server.setBroadcast(true);
-            server.send('Hosting', 0, 7, 6024, '255.255.255.255', function (err) {
+            server.send('Hosting', 0, 7, 6024, bcIP, function (err) {
                 if (err) throw err;
                 console.log('Message sent!');
             });
@@ -32,7 +35,7 @@ const Host = ({ navigation }) => {
 
     const startLobby = () => {
         const currentLobbyName = lobbyNameRef.current;
-        server.send('lb' + currentLobbyName, 0, currentLobbyName.length + 2, PORT, '255.255.255.255', function (err) {
+        server.send('lb' + currentLobbyName, 0, currentLobbyName.length + 2, PORT, bcIP, function (err) {
             if (err) {
                 console.error("Error sending message:", err);
             } else {

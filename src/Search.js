@@ -36,7 +36,7 @@ const Search = ({ navigation }) => {
             client.close();
         }
     }, []); // Empty dependency array, so this effect only runs once
-    //comments by chatgpt, asychronus state cause a headache
+    //comments up to here by chatgpt, asychronus state cause a headache
 
     const connect2Lobby = (index) => {
         client.send('UN' + Name, 0, Name.length + 2, PORT, lobbys[index].address);

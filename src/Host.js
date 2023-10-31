@@ -12,6 +12,7 @@ const Host = ({ navigation }) => {
     const repeatRef = useRef(null);
     const lobbyNameRef = useRef('');
     const [startedLobby, setStartedLobby] = useState(false);
+    const [startedGame, setStartedGame] = useState(false);
     const [users, setUsers] = useState([]);
 
     useEffect(() => {
@@ -54,7 +55,7 @@ const Host = ({ navigation }) => {
         };
     }, []);
 
-    const startLobby = () => {
+    const hostLobby = () => {
         setStartedLobby(true);
         const currentLobbyName = lobbyNameRef.current;
         server.send('lb' + currentLobbyName, 0, currentLobbyName.length + 2, PORT, bcIP, function (err) {
@@ -64,16 +65,29 @@ const Host = ({ navigation }) => {
                 console.log('Message sent!');
                 if (!repeatRef.current) {
                     repeatRef.current = setInterval(() => {
-                        startLobby();
+                        hostLobby();
                     }, 2000);
                 }
             }
         });
     };
 
+    const startGame = () => {
+        setStartedGame(true);
+    };
+
     useEffect(() => {
         lobbyNameRef.current = lobbyName;
     }, [lobbyName]);
+
+    if(startedGame)
+    {
+        return(
+            <View>
+                
+            </View>
+        );
+    }
 
     if(startedLobby)
     {
@@ -89,6 +103,10 @@ const Host = ({ navigation }) => {
                             ))
                         ) : (<Text>No Users yet</Text>)
                 }
+                <Button
+                    title="start game"
+                    onPress={startGame}
+                />
             </View>
         );
     }
@@ -103,8 +121,8 @@ const Host = ({ navigation }) => {
                 onChangeText={text => { setLobbyname(text) }}
             />
             <Button
-                title="start Lobby"
-                onPress={startLobby}
+                title="host Lobby"
+                onPress={hostLobby}
             />
         </View>
     );

@@ -9,6 +9,7 @@ const Host = ({ navigation }) => {
     let PORT = 6024;
     const [lobbyName, setLobbyname] = useState('');
     const [server, setServer] = useState(null);
+    const [indexListener, setIndexListener] = useState(null);
     const repeatRef = useRef(null);
     const lobbyNameRef = useRef('');
     const [startedLobby, setStartedLobby] = useState(false);
@@ -33,7 +34,6 @@ const Host = ({ navigation }) => {
             let msgLobby = msg.slice(2).toString();
             if (msg.slice(0, 2) == 'UN') {
                 console.log("found Users");
-                setUsers
                 // Use a callback function to ensure the correct value is used
                 setUsers(prevUsers => {
                     if (!prevUsers.some(element => element.message === msgLobby)) {
@@ -72,8 +72,10 @@ const Host = ({ navigation }) => {
         });
     };
 
-    const startGame = () => {
+    const startGame = (index) => {
+        setIndexListener(index);
         setStartedGame(true);
+        clearInterval(repeatRef.current);
     };
 
     useEffect(() => {
@@ -82,6 +84,23 @@ const Host = ({ navigation }) => {
 
     if(startedGame)
     {
+        server.on('message', (msg, rinfo) => {
+            console.log(`Received message: ${msg} from ${rinfo.address}:${rinfo.port}`);
+            let msgLobby = msg.slice(2).toString();
+            if (msg.slice(0, 2) == 'MG') {
+                console.log("found Text");
+                // Use a callback function to ensure the correct value is used
+                setUsers(prevUsers => {
+                    if (!prevUsers.some(element => element.message === msgLobby)) {
+                        console.log('Checked message:', msgLobby);
+                        return [...prevUsers, { message: msgLobby, address: rinfo.address }];
+                    } else {
+                        console.log('User already submitted');
+                        return prevUsers;
+                    }
+                });
+            }
+        });
         return(
             <View>
                 
@@ -93,20 +112,22 @@ const Host = ({ navigation }) => {
     {
         return(
             <View>
+                <Text>
+                    Pick Guesser to start game!
+                </Text>
                 {
                     users.length > 0 ?
                         (
                             users.map((users, index) => (
                                 <View key={index}>
-                                    <Text>{users.message}</Text>
+                                    <Button 
+                                    title={String(users.message)}
+                                    onPress={fct => startGame(index)}
+                                    />
                                 </View>
                             ))
                         ) : (<Text>No Users yet</Text>)
                 }
-                <Button
-                    title="start game"
-                    onPress={startGame}
-                />
             </View>
         );
     }

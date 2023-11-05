@@ -31,20 +31,40 @@ const Host = ({ navigation }) => {
 
         server.on('message', (msg, rinfo) => {
             console.log(`Received message: ${msg} from ${rinfo.address}:${rinfo.port}`);
-            let msgLobby = msg.slice(2).toString();
+            let msgText = msg.slice(2).toString();
+
+            if (msg.slice(0, 2) == 'MG') {
+                console.log("found Text");
+                // Use a callback function to ensure the correct value is used
+                const updatedUsers = users.map((user) => {
+                    if((user.address == rinfo.address) && (users[indexListener].address != rinfo.address))
+                    {
+                        if(user.text != null)
+                        {
+                            console.log(users);
+                            return {...user, text: msgText};
+                        }
+                    }
+                    return user;
+                });
+
+                setUsers(updatedUsers);
+            }
+
             if (msg.slice(0, 2) == 'UN') {
                 console.log("found Users");
                 // Use a callback function to ensure the correct value is used
                 setUsers(prevUsers => {
-                    if (!prevUsers.some(element => element.message === msgLobby)) {
-                        console.log('Checked message:', msgLobby);
-                        return [...prevUsers, { message: msgLobby, address: rinfo.address }];
+                    if (!prevUsers.some(element => element.message === msgText)) {
+                        console.log('Checked message:', msgText);
+                        return [...prevUsers, { message: msgText, address: rinfo.address, text: null}];
                     } else {
                         console.log('User already listed');
                         return prevUsers;
                     }
                 });
             }
+            
         });
 
         setServer(server);
@@ -84,26 +104,9 @@ const Host = ({ navigation }) => {
 
     if(startedGame)
     {
-        server.on('message', (msg, rinfo) => {
-            console.log(`Received message: ${msg} from ${rinfo.address}:${rinfo.port}`);
-            let msgLobby = msg.slice(2).toString();
-            if (msg.slice(0, 2) == 'MG') {
-                console.log("found Text");
-                // Use a callback function to ensure the correct value is used
-                setUsers(prevUsers => {
-                    if (!prevUsers.some(element => element.message === msgLobby)) {
-                        console.log('Checked message:', msgLobby);
-                        return [...prevUsers, { message: msgLobby, address: rinfo.address }];
-                    } else {
-                        console.log('User already submitted');
-                        return prevUsers;
-                    }
-                });
-            }
-        });
         return(
             <View>
-                
+
             </View>
         );
     }

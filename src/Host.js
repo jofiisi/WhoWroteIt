@@ -9,7 +9,7 @@ const Host = ({ navigation }) => {
     let PORT = 6024;
     const [lobbyName, setLobbyname] = useState('');
     const [server, setServer] = useState(null);
-    const [indexListener, setIndexListener] = useState(0);
+    const indexListener = useRef(null);
     const repeatRef = useRef(null);
     const lobbyNameRef = useRef('');
     const [startedLobby, setStartedLobby] = useState(false);
@@ -36,18 +36,15 @@ const Host = ({ navigation }) => {
                 console.log("found Text");
                 // Use a callback function to ensure the correct value is used
                 setUsers(prevUsers => {
-                    console.log(indexListener)
-                    const updatedUsers = prevUsers.map(user => {
-                        console.log(indexListener)
-                        if ((user.address === rinfo.address)/* && (prevUsers[indexListener].address !== rinfo.address)*/) {
+                    return prevUsers.map((user) => {
+                        if ((user.address == rinfo.address)/* && (prevUsers[indexListener.current].address != rinfo.address)*/) {
                             if (user.text == null) {
                                 return { ...user, text: msgText };
                             }
                         }
                         return user;
-                    });
-                    return updatedUsers;
-                });
+                    })}
+                );
             }
 
             if (msg.slice(0, 2) == 'UN') {
@@ -56,14 +53,14 @@ const Host = ({ navigation }) => {
                 setUsers(prevUsers => {
                     if (!prevUsers.some(element => element.message === msgText)) {
                         console.log('Checked message:', msgText);
-                        return [...prevUsers, { message: msgText, address: rinfo.address, text: null}];
+                        return [...prevUsers, { message: msgText, address: rinfo.address, text: null }];
                     } else {
                         console.log('User already listed');
                         return prevUsers;
                     }
                 });
             }
-            
+
         });
 
         setServer(server);
@@ -74,6 +71,10 @@ const Host = ({ navigation }) => {
             clearInterval(repeatRef.current);
         };
     }, []);
+//debug
+    useEffect(() => {
+        console.log(users);
+    }, [users])
 
     const hostLobby = () => {
         setStartedLobby(true);
@@ -93,7 +94,7 @@ const Host = ({ navigation }) => {
     };
 
     const startGame = (index) => {
-        setIndexListener(index);
+        indexListener.current = index;
         setStartedGame(true);
         clearInterval(repeatRef.current);
     };
@@ -102,18 +103,27 @@ const Host = ({ navigation }) => {
         lobbyNameRef.current = lobbyName;
     }, [lobbyName]);
 
-    if(startedGame)
-    {
-        return(
+    if (startedGame) {
+        return (
             <View>
-
+                {
+                    users.length > 0 ?
+                        (
+                            users.map((users, index) => (
+                                <View key={index}>
+                                    <Text>
+                                        {users.text}
+                                    </Text>
+                                </View>
+                            ))
+                        ) : (<Text>No Users yet</Text>)
+                }
             </View>
         );
     }
 
-    if(startedLobby)
-    {
-        return(
+    if (startedLobby) {
+        return (
             <View>
                 <Text>
                     Pick Guesser to start game!
@@ -123,9 +133,9 @@ const Host = ({ navigation }) => {
                         (
                             users.map((users, index) => (
                                 <View key={index}>
-                                    <Button 
-                                    title={String(users.message)}
-                                    onPress={fct => startGame(index)}
+                                    <Button
+                                        title={String(users.message)}
+                                        onPress={fct => startGame(index)}
                                     />
                                 </View>
                             ))

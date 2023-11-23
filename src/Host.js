@@ -15,7 +15,7 @@ const Host = ({ navigation }) => {
     const [startedLobby, setStartedLobby] = useState(false);
     const [startedGame, setStartedGame] = useState(false);
     const [users, setUsers] = useState([]);
-
+    const [stringUsers, setStringUsers] = useState("");
     useEffect(() => {
         const server = udpSocket.createSocket('udp4');
 
@@ -89,18 +89,27 @@ const Host = ({ navigation }) => {
         });
     };
 
+    useEffect(()=>{
+        setStringUsers(JSON.stringify(users));
+    }, [users]);
+
     const sendGameData = () => {
-        //server.send('GD' + );
+        console.log(stringUsers);
+        for (let i = 0; i < users.length; i++) {
+            console.log(users[i].text);
+            server.send('GD' + stringUsers, 0, 2 + stringUsers.length, PORT, users[i].address);   
+        }
     }
 
     const startGame = (index) => {
         indexListener.current = index;
         setStartedGame(true);
         clearInterval(repeatRef.current);
-        setInterval(() => {
+        repeatRef.current = setInterval(() => {
             sendGameData();
         }, 2000);
     };
+
 
     useEffect(() => {
         lobbyNameRef.current = lobbyName;

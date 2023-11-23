@@ -3,7 +3,7 @@ import { View, Text, TextInput, Button } from "react-native";
 import udpSocket from "react-native-udp";
 
 //remove when not using an Androidstudioemulator
-const bcIP = '10.0.2.2'
+const bcIP = '10.0.2.2' // 255.255.255.255, 10.0.2.2
 
 const Host = ({ navigation }) => {
     let PORT = 6024;
@@ -67,14 +67,11 @@ const Host = ({ navigation }) => {
         setServer(server);
 
         return () => {
-            server.close();
+            console.log("closing udp");
             clearInterval(repeatRef.current);
+            server.close();
         };
     }, []);
-//debug
-    useEffect(() => {
-        console.log(users);
-    }, [users])
 
     const hostLobby = () => {
         setStartedLobby(true);
@@ -93,10 +90,17 @@ const Host = ({ navigation }) => {
         });
     };
 
+    const sendGameData = () => {
+        server.send('GD' + );
+    }
+
     const startGame = (index) => {
         indexListener.current = index;
         setStartedGame(true);
         clearInterval(repeatRef.current);
+        setInterval(() => {
+            sendGameData();
+        }, 2000);
     };
 
     useEffect(() => {
@@ -112,6 +116,8 @@ const Host = ({ navigation }) => {
                             users.map((users, index) => (
                                 <View key={index}>
                                     <Text>
+                                        {users.address}
+                                        {users.message}
                                         {users.text}
                                     </Text>
                                 </View>

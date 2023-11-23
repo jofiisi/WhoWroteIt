@@ -3,7 +3,11 @@ import { View, Text, TextInput, Button } from "react-native";
 import udpSocket from "react-native-udp";
 
 //remove when not using an Androidstudioemulator
+<<<<<<< HEAD
 const bcIP = '10.0.2.2' // 255.255.255.255, 10.0.2.2
+=======
+const bcIP = '255.255.255.255'
+>>>>>>> 904ad5a5d94f3d1d71b6a7bd952d66a94b95e2f5
 
 const Host = ({ navigation }) => {
     let PORT = 6024;
@@ -22,7 +26,7 @@ const Host = ({ navigation }) => {
         server.bind(PORT);
 
         server.once('listening', function () {
-            server.setBroadcast(true);
+            //server.setBroadcast(true);
             server.send('Hosting', 0, 7, 6024, bcIP, function (err) {
                 if (err) throw err;
                 console.log('Message sent!');
@@ -32,7 +36,6 @@ const Host = ({ navigation }) => {
         server.on('message', (msg, rinfo) => {
             console.log(`Received message: ${msg} from ${rinfo.address}:${rinfo.port}`);
             let msgText = msg.slice(2).toString();
-
             if (msg.slice(0, 2) == 'MG') {
                 console.log("found Text");
                 // Use a callback function to ensure the correct value is used
@@ -67,7 +70,12 @@ const Host = ({ navigation }) => {
         setServer(server);
 
         return () => {
+<<<<<<< HEAD
             console.log("closing udp");
+=======
+            console.log("return to homescreen")
+            server.close();
+>>>>>>> 904ad5a5d94f3d1d71b6a7bd952d66a94b95e2f5
             clearInterval(repeatRef.current);
             server.close();
         };

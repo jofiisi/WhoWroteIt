@@ -33,6 +33,7 @@ const Search = ({ navigation }) => {
             }
         });
         return () => {
+            console.log("return to homescreen")
             client.close();
         }
     }, []); // Empty dependency array, so this effect only runs once

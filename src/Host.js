@@ -3,11 +3,7 @@ import { View, Text, TextInput, Button } from "react-native";
 import udpSocket from "react-native-udp";
 
 //remove when not using an Androidstudioemulator
-<<<<<<< HEAD
 const bcIP = '10.0.2.2' // 255.255.255.255, 10.0.2.2
-=======
-const bcIP = '255.255.255.255'
->>>>>>> 904ad5a5d94f3d1d71b6a7bd952d66a94b95e2f5
 
 const Host = ({ navigation }) => {
     let PORT = 6024;
@@ -70,12 +66,7 @@ const Host = ({ navigation }) => {
         setServer(server);
 
         return () => {
-<<<<<<< HEAD
             console.log("closing udp");
-=======
-            console.log("return to homescreen")
-            server.close();
->>>>>>> 904ad5a5d94f3d1d71b6a7bd952d66a94b95e2f5
             clearInterval(repeatRef.current);
             server.close();
         };
@@ -99,7 +90,7 @@ const Host = ({ navigation }) => {
     };
 
     const sendGameData = () => {
-        server.send('GD' + );
+        //server.send('GD' + );
     }
 
     const startGame = (index) => {

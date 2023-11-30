@@ -15,7 +15,8 @@ const Host = ({ navigation }) => {
     const [startedLobby, setStartedLobby] = useState(false);
     const [startedGame, setStartedGame] = useState(false);
     const [users, setUsers] = useState([]);
-    const [stringUsers, setStringUsers] = useState("");
+    const [isSendingGameData, setIsSendingGameData] = useState(false);
+    
     useEffect(() => {
         const server = udpSocket.createSocket('udp4');
 
@@ -66,6 +67,7 @@ const Host = ({ navigation }) => {
         setServer(server);
 
         return () => {
+            setIsSendingGameData(false);
             console.log("closing udp");
             clearInterval(repeatRef.current);
             server.close();
@@ -89,27 +91,33 @@ const Host = ({ navigation }) => {
         });
     };
 
-    useEffect(()=>{
-        setStringUsers(JSON.stringify(users));
-    }, [users]);
-
     const sendGameData = () => {
-        console.log(stringUsers);
+        for (let y = 0; y < users.length; y++) {
+            console.log(users[y].message);
+            
+        }
+        let stringUsers = JSON.stringify(users);
         for (let i = 0; i < users.length; i++) {
-            console.log(users[i].text);
             server.send('GD' + stringUsers, 0, 2 + stringUsers.length, PORT, users[i].address);   
         }
     }
+
+    useEffect(() => {
+        clearInterval(repeatRef.current);
+        repeatRef.current = setInterval(() => {
+            sendGameData();
+        }, 2000);
+    }, [users]);
 
     const startGame = (index) => {
         indexListener.current = index;
         setStartedGame(true);
         clearInterval(repeatRef.current);
+        setIsSendingGameData(true);
         repeatRef.current = setInterval(() => {
             sendGameData();
         }, 2000);
     };
-
 
     useEffect(() => {
         lobbyNameRef.current = lobbyName;

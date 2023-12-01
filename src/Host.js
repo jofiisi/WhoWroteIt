@@ -16,6 +16,7 @@ const Host = ({ navigation }) => {
     const [startedGame, setStartedGame] = useState(false);
     const [users, setUsers] = useState([]);
     const [isSendingGameData, setIsSendingGameData] = useState(false);
+    const [Name, setName] = useState('');
     
     useEffect(() => {
         const server = udpSocket.createSocket('udp4');
@@ -76,6 +77,10 @@ const Host = ({ navigation }) => {
 
     const hostLobby = () => {
         setStartedLobby(true);
+        if(users == [])
+        {
+            
+        }
         const currentLobbyName = lobbyNameRef.current;
         server.send('lb' + currentLobbyName, 0, currentLobbyName.length + 2, PORT, bcIP, function (err) {
             if (err) {
@@ -103,10 +108,13 @@ const Host = ({ navigation }) => {
     }
 
     useEffect(() => {
-        clearInterval(repeatRef.current);
-        repeatRef.current = setInterval(() => {
-            sendGameData();
-        }, 2000);
+        if(isSendingGameData)
+        {
+            clearInterval(repeatRef.current);
+            repeatRef.current = setInterval(() => {
+                sendGameData();
+            }, 2000);
+        }
     }, [users]);
 
     const startGame = (index) => {
@@ -174,11 +182,19 @@ const Host = ({ navigation }) => {
             </Text>
             <TextInput
                 placeholder="Lobby Name"
-                onChangeText={text => { setLobbyname(text) }}
+                onChangeText={text => { setLobbyname(text);
+            }}
+            />
+            <Text>
+                User Name
+            </Text>
+            <TextInput
+                placeholder="User Name"
+                onChangeText={text => { setName(text) }}
             />
             <Button
                 title="host Lobby"
-                onPress={hostLobby}
+                onPress={() => {hostLobby(); setUsers([{message: Name, address: "127.0.0.1", text: null}]);}}
             />
         </View>
     );

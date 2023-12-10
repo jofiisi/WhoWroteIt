@@ -9,7 +9,7 @@ const Host = ({ navigation }) => {
     let PORT = 6024;
     const [lobbyName, setLobbyname] = useState('');
     const [server, setServer] = useState(null);
-    const indexListener = useRef(null);
+    const indexGuesser = useRef(null);
     const repeatRef = useRef(null);
     const lobbyNameRef = useRef('');
     const [startedLobby, setStartedLobby] = useState(false);
@@ -39,7 +39,7 @@ const Host = ({ navigation }) => {
                 // Use a callback function to ensure the correct value is used
                 setUsers(prevUsers => {
                     return prevUsers.map((user) => {
-                        if ((user.address == rinfo.address)/* && (prevUsers[indexListener.current].address != rinfo.address)*/) {
+                        if ((user.address == rinfo.address)/* && (prevUsers[indexGuesser.current].address != rinfo.address)*/) {
                             if (user.text == null) {
                                 return { ...user, text: msgText };
                             }
@@ -103,7 +103,9 @@ const Host = ({ navigation }) => {
         }
         let stringUsers = JSON.stringify(users);
         for (let i = 0; i < users.length; i++) {
-            server.send('GD' + stringUsers, 0, 2 + stringUsers.length, PORT, users[i].address);   
+            server.send('GD' + stringUsers, 0, 2 + stringUsers.length, PORT, users[i].address);  
+            console.log(indexGuesser.current);
+            server.send('GUID' + indexGuesser.current.toString(), 0, 4 + indexGuesser.current.toString().length, PORT, users[i].address);
         }
     }
 
@@ -118,7 +120,7 @@ const Host = ({ navigation }) => {
     }, [users]);
 
     const startGame = (index) => {
-        indexListener.current = index;
+        indexGuesser.current = index;
         setStartedGame(true);
         clearInterval(repeatRef.current);
         setIsSendingGameData(true);
